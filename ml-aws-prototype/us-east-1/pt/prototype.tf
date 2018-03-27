@@ -1,3 +1,14 @@
+locals {
+  common_tags = {
+    Terraform   = "true"
+    division    = "operations"
+    project     = "aws base"
+    environment = "proto"
+    envid       = "unknown"
+    role        = "unknown"
+  }
+}
+
 terraform {
   backend "s3" {
     bucket = "ml-sre-terraform-state"
@@ -9,56 +20,43 @@ terraform {
   }
 }
 
-module "prototype" {
-  source = "../../../../terraform_aws_base"
+provider "aws" {
+  version = "~> 1.10"
 
-  #
-  # Auth for AWS provider
-  #
-  admin_role_arn = "arn:aws:iam::758748077998:role/sre"
+  # No credential explicity set here because they come from either the environment or the global credentials file.
+
   region = "us-east-1"
-
-
-  #
-  # Common tags used by resources created by this module.
-  #
-  common_tags = {
-    Terraform   = "true"
-    division    = "operations"
-    project     = "aws base"
-    environment = "proto"
-    envid       = "unknown"
-    role        = "unknown"
+  assume_role {
+    role_arn = "arn:aws:iam::758748077998:role/sre"
   }
+}
+
+module "default_security_groups" {
+  source = "../../../../terraform_aws_base/default_security_groups"
+
+  common_tags = "${local.common_tags}"
+}
+
+module "subdomain" {
+  source = "../../../../terraform_aws_base/subdomain"
 
   #
-  # Commit map used by the pipeline to insert infra and code commit hashes.
-  #
-  commit_map = {
-    infrastructure_hash = "unknown"
-    configuration_hash  = "unknown"
-  }
-
-  #
-  # Main domain configuration.  Required when enable_subdomain is true.
-  # This will be used as a data source for subdomain operations and a target
-  # for adding subdomain glue records.
-  #
-  maindomain_name = "tf.mml.cloud."
-
-  #
-  # Subdomain configuration.  Setting enable_subdomain to true will:
+  # Subdomain configuration.
   #   1. Create subdomain
   #   2. Add glue recrods to maindomain_name hosted zone
-  #   3. Request a DNS validated (automated) SSL cert for *.<subdomain
+  #   3. Request a DNS validated (automated) SSL cert for *.<subdomain>
   #
-  enable_subdomain = true
+
+  maindomain_name = "tf.mml.cloud."
   subdomain_prefix = "pt" // prototype
+}
+
+module "vpc" {
+  source = "../../../../terraform_aws_base/vpc"
 
   #
   # VPC Configuration
   #
-
   vpc_name = "prototype-vpc"
   vpc_cidr = "10.18.224.0/24"
   vpc_azs = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"]
@@ -68,4 +66,5 @@ module "prototype" {
   vpc_elasticache_subnets = ["10.18.224.160/28", "10.18.224.176/28", "10.18.224.192/28"]
   vpc_redshift_subnets = ["10.18.224.208/28", "10.18.224.224/28", "10.18.224.240/28"]
 
+  common_tags = "${local.common_tags}"
 }
