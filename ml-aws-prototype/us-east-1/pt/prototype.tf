@@ -57,7 +57,7 @@ module "vpc" {
   #
   # VPC Configuration
   #
-  vpc_name = "prototype-vpc"
+  vpc_name = "pt-vpc"
   vpc_cidr = "10.18.224.0/24"
   vpc_azs = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"]
   vpc_private_subnets = ["10.18.224.0/28", "10.18.224.16/28", "10.18.224.32/28", "10.18.224.48/28"]
