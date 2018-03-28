@@ -25,6 +25,8 @@ provider "aws" {
 
   # No credential explicity set here because they come from either the environment or the global credentials file.
 
+  allowed_account_ids = [ "652911386828" ]
+
   region = "us-east-1"
   assume_role {
     role_arn = "arn:aws:iam::652911386828:role/sre"
