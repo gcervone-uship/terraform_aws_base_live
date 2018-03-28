@@ -12,7 +12,7 @@ locals {
 terraform {
   backend "s3" {
     bucket = "ml-sre-terraform-state"
-    key    = "ml-aws-sandbox/us-east-1/sb/terraform.tfstate"
+    key    = "ml-aws-sandbox/us-east-1/sandbox/terraform.tfstate"
     region = "us-east-1"
 
     # uses access_key and secret_key from default aws config
@@ -57,7 +57,7 @@ module "vpc" {
   #
   # VPC Configuration
   #
-  vpc_name = "sb-vpc"
+  vpc_name = "sandbox"
   vpc_cidr = "10.18.32.0/20"
   vpc_azs = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"]
   vpc_private_subnets = ["10.18.32.0/23", "10.18.34.0/23", "10.18.36.0/23", "10.18.38.0/23"]
