@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "..\/..\/..\/..\/terraform_aws_base\/vpc"
+  source = "../../../../terraform_aws_base/vpc"
 
   #
   # VPC Configuration

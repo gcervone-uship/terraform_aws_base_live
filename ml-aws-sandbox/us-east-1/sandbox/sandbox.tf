@@ -13,12 +13,9 @@ terraform {
   backend "s3" {
     # https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
     bucket = "ml-sre-terraform-aws-base"
-    key    = "ml-aws-sandbox/us-east-1/shared/terraform.tfstate"
+    key    = "ml-aws-sandbox/us-east-1/sandbox/terraform.tfstate"
     region = "us-east-1"
-
-    # uses access_key and secret_key from default aws config
-    # role_arn = "arn:aws:iam::652911386828:role/sre"
-    profile = "awx_shared"
+    profile = "sre_shared"
   }
 }
 
@@ -26,7 +23,7 @@ provider "aws" {
   version = "~> 1.10"
   allowed_account_ids = ["993374481031"]
   region              = "us-east-1"
-  profile             = "awx_shared"
+  profile             = "sre_shared"
 }
 
 //module "default_security_groups" {
