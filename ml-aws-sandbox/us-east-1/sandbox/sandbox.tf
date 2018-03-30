@@ -15,7 +15,8 @@ terraform {
     bucket = "ml-sre-terraform-aws-base"
     key    = "ml-aws-sandbox/us-east-1/sandbox/terraform.tfstate"
     region = "us-east-1"
-    profile = "sre_shared"
+    shared_credentials_file = "../../../credentials"
+    profile = "terraform_shared"
   }
 }
 
@@ -23,7 +24,8 @@ provider "aws" {
   version = "~> 1.10"
   allowed_account_ids = ["993374481031"]
   region              = "us-east-1"
-  profile             = "sre_shared"
+  shared_credentials_file = "../../../credentials"
+  profile = "terraform_shared"
 }
 
 //module "default_security_groups" {

@@ -1,4 +1,7 @@
 locals {
+
+  # Common tags for passing down to various modules.  These will be used as a default set of tags to use in
+  # downstream resources.
   common_tags = {
     Terraform   = "true"
     division    = "operations"
@@ -9,13 +12,17 @@ locals {
   }
 }
 
+#
+# Terraform backend that holds the state files.  Each environment should have it's own state file.
+# https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
 terraform {
   backend "s3" {
-    # https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
     bucket = "ml-sre-terraform-aws-base"
     key    = "ml-aws-prototype/us-east-1/prototype/terraform.tfstate"
     region = "us-east-1"
-    profile = "sre_shared"
+
+    shared_credentials_file = "../../../credentials"
+    profile = "terraform_shared"
   }
 }
 
@@ -23,7 +30,8 @@ provider "aws" {
   version = "~> 1.10"
   allowed_account_ids = ["758748077998"]
   region              = "us-east-1"
-  profile             = "sre_prototype"
+  shared_credentials_file = "../../../credentials"
+  profile             = "terraform_prototype"
 }
 
 provider "aws" {
@@ -31,7 +39,8 @@ provider "aws" {
   version = "~> 1.10"
   allowed_account_ids = ["652911386828"]
   region              = "us-west-1"
-  profile             = "sre_shared"
+  shared_credentials_file = "../../../credentials"
+  profile             = "terraform_shared"
 }
 
 //module "default_security_groups" {
@@ -78,10 +87,8 @@ data "terraform_remote_state" "vpc_peer" {
     bucket = "ml-sre-terraform-aws-base"
     key    = "ml-aws-shared/us-east-1/shared/terraform.tfstate"
     region = "us-east-1"
-
-    # uses access_key and secret_key from default aws config
-    # role_arn = "arn:aws:iam::652911386828:role/sre"
-    profile = "awx_shared"
+    shared_credentials_file = "../../../credentials"
+    profile = "terraform_shared"
   }
 
 }

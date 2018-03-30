@@ -3,5 +3,6 @@
 - account
     - region
         - environment
-        
+
+Each environment should have it's own state file.
         

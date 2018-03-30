@@ -15,7 +15,8 @@ terraform {
     bucket = "ml-sre-terraform-aws-base"
     key    = "ml-aws-shared/us-east-1/shared/terraform.tfstate"
     region = "us-east-1"
-    profile = "sre_shared"
+    shared_credentials_file = "../../../credentials"
+    profile = "terraform_shared"
   }
 }
 
@@ -23,7 +24,8 @@ provider "aws" {
   version = "~> 1.10"
   allowed_account_ids = ["652911386828"]
   region              = "us-west-1"  # todo need to parameterize this.
-  profile             = "awx_shared"
+  shared_credentials_file = "../../../credentials"
+  profile = "terraform_shared"
 }
 
 data "aws_caller_identity" "current" {}
@@ -35,7 +37,9 @@ provider "aws" {
   version = "~> 1.10"
   allowed_account_ids = ["652911386828"]
   region              = "us-west-1" # todo need to parameterize this.
-  profile             = "sre_shared"
+  shared_credentials_file = "../../../credentials"
+  profile = "terraform_shared"
+
 }
 
 //module "default_security_groups" {
