@@ -10,3 +10,6 @@
 
 # User-specific stuff:
 .idea/**
+
+# credentials file (secrets)
+credentials
