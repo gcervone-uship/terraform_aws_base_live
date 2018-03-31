@@ -76,7 +76,8 @@ module "vpc_peer" {
   peer_vpc_owner_id = "${data.terraform_remote_state.shared_us_east_1_remote_state.account_id}"
   peer_vpc_region   = "${data.terraform_remote_state.shared_us_east_1_remote_state.region}"
 
-  common_tags = "${local.common_tags}"
+
+  common_tags = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
 }
 
 #
@@ -125,6 +126,44 @@ resource "aws_route53_record" "test_A_record" {
   ttl     = "30"
 
   records = ["127.0.0.1"]
+}
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-artful-17.10-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
+
+resource "aws_key_pair" "deployer" {
+  count   = "${local.enable_test_resources}"
+
+  key_name   = "terraform-test-${module.vpc.vpc_id}"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCKxsW/PNdErfbVn2+1oxtAcLTNqmeDdROuH+CdmOH6c3Hbr5QqY+QMBt8rTqxnG8MUMPCFbrsbgYH+SmiZUTzgFlng864HUGtKG917zKQ+uYYN9iuJ2jJJdy1G+BbyS8cjOua9TFdCPe3OV6PwuZtWeBcN0KTkSxzaZBN1U09wLLrpp6MRmC38iss9dsl57QOHa/fkyTxFWm9Mi+1BSCsBWsDR6CeHwmXX/GLOf5eM5NNp210nkLqRBnY5DTETXn6yERf+oAeRBDn0teVD//Vs0N0OZKzKZzaIeesiPQg0JZAOcMMD7AaTJvqC+ZPfGAO+rhXMeRjboBsHGxbxqG2x ml-infra-dev"
+}
+
+resource "aws_instance" "web" {
+  count   = "${local.enable_test_resources}"
+
+  ami           = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.micro"
+  vpc_security_group_ids = [ "${module.default_security_groups.private_nets_ssh_security_group_id}"]
+  key_name = "${aws_key_pair.deployer.key_name}"
+
+  # since I don't have a way into the VPC yet... put it in public and get a public IP.
+  subnet_id = "${element(module.vpc.public_subnets, 0)}"
+  associate_public_ip_address = true
+
+  tags = "${merge(local.common_tags, map("Name", "terraform-test-${module.vpc.vpc_id}"))}"
 }
 
 ##############################################################################
