@@ -13,7 +13,7 @@ terraform {
   backend "s3" {
     # https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
     bucket = "ml-sre-terraform-aws-base"
-    key    = "ml-aws-staging/us-east-1/staging/terraform.tfstate"
+    key    = "ml-aws-staging/us-east-1/staging/terraform.tfstate"    # Key should be the only change needed.
     region = "us-east-1"
 
     shared_credentials_file = "../../../common/credentials"

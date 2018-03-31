@@ -25,4 +25,7 @@ aws_secret_access_key = CHANGE_ME
 ```
 
 *
+
+
+Backend config should be the same across all deploys.  The only part that should change is the key.
         
