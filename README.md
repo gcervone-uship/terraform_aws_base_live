@@ -11,7 +11,18 @@ Link to the the global.tf file for some common code.
 
 ## Setup
 
-* Copy the credentials file in the examples folder to the common folder and fill with appropriate creds.  Each of
-the providers utilize this file.
+* Setup the common/credentials file.
+```
+[terraform_prototype]
+aws_access_key_id = CHANGE_ME
+aws_secret_access_key = CHANGE_ME
+[terraform_shared]
+aws_access_key_id = CHANGE_ME
+aws_secret_access_key = CHANGE_ME
+[terraform_sandbox]
+aws_access_key_id = CHANGE_ME
+aws_secret_access_key = CHANGE_ME
+```
+
 *
         

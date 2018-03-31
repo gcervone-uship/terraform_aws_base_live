@@ -13,7 +13,7 @@ terraform {
   backend "s3" {
     # https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
     bucket = "ml-sre-terraform-aws-base"
-    key    = "ml-aws-development/eu-west-1/development/terraform.tfstate"
+    key    = "ml-aws-qa/us-east-1/qa/terraform.tfstate"
     region = "us-east-1"
 
     shared_credentials_file = "../../../common/credentials"
@@ -30,7 +30,7 @@ locals {
     Terraform   = "true"
     division    = "operations"
     project     = "aws base"
-    environment = "dev"
+    environment = "qa"
     envid       = "unknown"
     role        = "unknown"
   }
@@ -47,9 +47,9 @@ locals {
 provider "aws" {
   version                 = "~> 1.10"
   allowed_account_ids     = ["000000000000"]  # <<<---- todo change to real account ID when we it created.
-  region                  = "eu-west-1"
+  region                  = "us-east-1"
   shared_credentials_file = "../../../common/credentials"
-  profile                 = "terraform_development"
+  profile                 = "terraform_qa"
 }
 
 
@@ -65,14 +65,14 @@ provider "aws" {
 module "vpc" {
   source = "../../../../terraform_aws_base/vpc"
 
-  vpc_name = "development"
-  vpc_cidr = "10.18.80.0/20"
-  vpc_azs = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
-  vpc_private_subnets = ["10.18.80.0/23", "10.18.82.0/23", "10.18.84.0/23"]
-  vpc_public_subnets = ["10.18.88.0/25", "10.18.88.128/25", "10.18.89.0/25"]
-  vpc_database_subnets = ["10.18.90.0/25", "10.18.90.128/25", "10.18.91.0/25"]
-  vpc_elasticache_subnets = ["10.18.92.0/25", "10.18.92.128/25", "10.18.93.0/25"]
-  vpc_redshift_subnets = ["10.18.94.0/25", "10.18.94.128/25", "10.18.95.0/25"]
+  vpc_name = "qa"
+  vpc_cidr                = "10.18.96.0/20"
+  vpc_azs                 = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"]
+  vpc_private_subnets     = ["10.18.96.0/23", "10.18.98.0/23", "10.18.100.0/23", "10.18.102.0/23"]
+  vpc_public_subnets      = ["10.18.104.0/25", "10.18.104.128/25", "10.18.105.0/25", "10.18.105.128/25"]
+  vpc_database_subnets    = ["10.18.106.0/25", "10.18.106.128/25", "10.18.107.0/25", "10.18.107.128/25"]
+  vpc_elasticache_subnets = ["10.18.108.0/25", "10.18.108.128/25", "10.18.109.0/25", "10.18.109.128/25"]
+  vpc_redshift_subnets    = ["10.18.110.0/25", "10.18.110.128/25", "10.18.111.0/25", "10.18.111.128/25"]
 
   common_tags = "${local.common_tags}"
 }
@@ -94,6 +94,6 @@ locals {
 #
 
 locals {
-  enable_subdomain = false      # FALSE - We already set up this domain in the us-east-1 config
-  subdomain_prefix = "dev"      # dev.mml.cloud (development account)
+  enable_subdomain = true
+  subdomain_prefix = "qa"      # qa.mml.cloud (qa account)
 }

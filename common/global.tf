@@ -60,7 +60,7 @@ module "vpc_peer" {
   enable_vpc_peering = "${local.enable_vpc_peering}"
 
   providers = {
-    "aws.peer" = "aws.shared-us-west-1" # defined in global.tf  todo change this to east when have the limits raised.
+    "aws.peer" = "aws.shared-us-east-1" # defined in global.tf
     "aws"      = "aws"                  # defined locally
   }
 
@@ -113,11 +113,30 @@ module "subdomain" {
 #
 resource "aws_route53_record" "test_A_record" {
   count   = "${local.enable_test_resources}"
-  name    = "test"
+  name    = "test" # todo need to make this work when called from two regions in the same account.  Add something region specific and add to output.
   type    = "A"
   zone_id = "${module.subdomain.zone_id}"
   ttl     = "30"
 
   records = ["127.0.0.1"]
+}
+
+##############################################################################
+#                                                                            #
+#                                 OUTPUTS                                    #
+#                                                                            #
+##############################################################################
+
+output "vpc_id" {
+  description = "The ID of the VPC"
+  value       = "${module.vpc.vpc_id}"
+}
+
+output "account_id" {
+  value = "${data.aws_caller_identity.current.account_id}"
+}
+
+output "region" {
+  value = "${data.aws_region.current.id}"
 }
 

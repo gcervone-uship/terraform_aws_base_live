@@ -66,7 +66,6 @@ module "vpc" {
   source = "../../../../terraform_aws_base/vpc"
 
   vpc_name = "prototype"
-
   vpc_cidr                = "10.18.224.0/24"
   vpc_azs                 = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"]
   vpc_private_subnets     = ["10.18.224.0/28", "10.18.224.16/28", "10.18.224.32/28", "10.18.224.48/28"]
@@ -83,7 +82,6 @@ locals {
   enable_default_security_groups = true
 }
 
-
 ##############################################################################
 #                                                                            #
 #                             ROUTE 53 SUBDOMAIN SETUP                       #
@@ -99,5 +97,3 @@ locals {
   enable_subdomain = true
   subdomain_prefix = "pt"      # pt.mml.cloud (prototype account)
 }
-
-
