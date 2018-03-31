@@ -62,7 +62,7 @@ data "aws_region" "current" {}
 # Setup vpc peering between the VPC created here and the main one in the shared account.
 #
 module "vpc_peer" {
-  source = "../../../../terraform_aws_base/vpc_peering"
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc_peering?ref=lee/working" # todo change branch.
 
   enable_vpc_peering = "${local.enable_vpc_peering}"
 
@@ -83,8 +83,9 @@ module "vpc_peer" {
 # Add the default security groups to the VPC created above
 #
 module "default_security_groups" {
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//default_security_groups?ref=lee/working" # todo change branch.
+
   enable_default_security_groups = "${local.enable_default_security_groups}"
-  source                         = "../../../../terraform_aws_base/default_security_groups"
 
   vpc_id = "${module.vpc.vpc_id}"
 
@@ -92,7 +93,7 @@ module "default_security_groups" {
 }
 
 module "subdomain" {
-  source = "../../../../terraform_aws_base/subdomain"
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//subdomain?ref=lee/working" # todo change branch.
 
   enable_subdomain = "${local.enable_subdomain}"
 

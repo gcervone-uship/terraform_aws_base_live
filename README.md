@@ -30,3 +30,4 @@ aws_secret_access_key = CHANGE_ME
 * Backend config should be the same across all deploys.  The only part that should change is the key.
 * ml-aws/shared/us-east-1/shared must be created first since all other accounts depend on it.
 
+* Git credentials for the module source gets will have to be setup.

@@ -63,7 +63,7 @@ provider "aws" {
 # Creates and configures the vpc, subnets, subnet groups, internet gateways and NAT gateways
 #
 module "vpc" {
-  source = "../../../../terraform_aws_base/vpc"
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc?ref=lee/working" # todo change branch.
 
   vpc_name = "development"
   vpc_cidr = "10.18.64.0/20"
