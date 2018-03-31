@@ -13,6 +13,13 @@ data "terraform_remote_state" "shared_us_east_1_remote_state" {
     shared_credentials_file = "../../../common/credentials"
     profile                 = "terraform_shared"
   }
+
+  # Defaults for the remote state.  Necessary for the initial 'shared' creation not to error because this doesn't exist.
+  defaults {
+    vpc_id     = "undefined"
+    account_id = "undefined"
+    region     = "undefined"
+  }
 }
 
 #
@@ -38,11 +45,11 @@ provider "aws" {
   profile                 = "terraform_shared"
 }
 
-
 #
 # Setup a few datasources for outputs
 #
 data "aws_caller_identity" "current" {}
+
 data "aws_region" "current" {}
 
 ##############################################################################
@@ -76,9 +83,8 @@ module "vpc_peer" {
 # Add the default security groups to the VPC created above
 #
 module "default_security_groups" {
-
   enable_default_security_groups = "${local.enable_default_security_groups}"
-  source = "../../../../terraform_aws_base/default_security_groups"
+  source                         = "../../../../terraform_aws_base/default_security_groups"
 
   vpc_id = "${module.vpc.vpc_id}"
 
@@ -101,7 +107,6 @@ module "subdomain" {
   common_tags = "${local.common_tags}"
 }
 
-
 ##############################################################################
 #                                                                            #
 #                         TEMPORARY TEST RESOURCES                           #
@@ -113,7 +118,7 @@ module "subdomain" {
 #
 resource "aws_route53_record" "test_A_record" {
   count   = "${local.enable_test_resources}"
-  name    = "test" # todo need to make this work when called from two regions in the same account.  Add something region specific and add to output.
+  name    = "test-${module.vpc.vpc_id}"                           # todo need to make this work when called from two regions in the same account.  Add something region specific and add to output.
   type    = "A"
   zone_id = "${module.subdomain.zone_id}"
   ttl     = "30"
@@ -140,3 +145,6 @@ output "region" {
   value = "${data.aws_region.current.id}"
 }
 
+output "dns_test" {
+  value = "${aws_route53_record.test_A_record.0.fqdn}"
+}
