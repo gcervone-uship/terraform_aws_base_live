@@ -13,7 +13,7 @@ terraform {
   backend "s3" {
     # https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
     bucket = "ml-sre-terraform-aws-base"
-    key    = "ml-aws-prototype/us-east-1/prototype/terraform.tfstate"    # Key should be the only change needed.
+    key    = "ml-aws-prototype/us-east-1/prototype/terraform.tfstate" # Key should be the only change needed.
     region = "us-east-1"
 
     shared_credentials_file = "../../../common/credentials"
@@ -52,7 +52,6 @@ provider "aws" {
   profile                 = "terraform_prototype"
 }
 
-
 ##############################################################################
 #                                                                            #
 #                                VPC SETUP                                   #
@@ -65,7 +64,7 @@ provider "aws" {
 module "vpc" {
   source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc?ref=lee/working" # todo change branch.
 
-  vpc_name = "prototype"
+  vpc_name                = "prototype"
   vpc_cidr                = "10.18.224.0/24"
   vpc_azs                 = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"]
   vpc_private_subnets     = ["10.18.224.0/28", "10.18.224.16/28", "10.18.224.32/28", "10.18.224.48/28"]
@@ -78,8 +77,9 @@ module "vpc" {
 }
 
 locals {
-  enable_vpc_peering = true
-  enable_default_security_groups = true
+  enable_vpc_peering                     = true
+  enable_vpc_peering_route_table_updates = true
+  enable_default_security_groups         = true
 }
 
 ##############################################################################
@@ -95,5 +95,5 @@ locals {
 
 locals {
   enable_subdomain = true
-  subdomain_prefix = "pt"      # pt.mml.cloud (prototype account)
+  subdomain_prefix = "pt" # pt.mml.cloud (prototype account)
 }
