@@ -76,6 +76,12 @@ module "vpc_peer" {
   peer_vpc_owner_id = "${data.terraform_remote_state.shared_us_east_1_remote_state.account_id}"
   peer_vpc_region   = "${data.terraform_remote_state.shared_us_east_1_remote_state.region}"
 
+  my_vpc_cidr_block = "${module.vpc.vpc_cidr_block}"
+  peer_vpc_cidr_block = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_cidr_block}"
+  my_public_route_table_ids = "${module.vpc.public_route_table_ids}"
+  my_private_route_table_ids = "${module.vpc.private_route_table_ids}"
+  peer_public_route_table_ids = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids}"
+  peer_private_route_table_ids = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids}"
 
   common_tags = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
 }
@@ -128,12 +134,13 @@ resource "aws_route53_record" "test_A_record" {
   records = ["127.0.0.1"]
 }
 
-data "aws_ami" "ubuntu" {
+data "aws_ami" "sre_ubuntu" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-artful-17.10-amd64-server-*"]
+    values = ["base-ami-ubuntu-hvm-*"]
+
   }
 
   filter {
@@ -141,7 +148,7 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = ["${data.aws_caller_identity.current.account_id}"]
 }
 
 resource "aws_key_pair" "deployer" {
@@ -151,12 +158,13 @@ resource "aws_key_pair" "deployer" {
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCKxsW/PNdErfbVn2+1oxtAcLTNqmeDdROuH+CdmOH6c3Hbr5QqY+QMBt8rTqxnG8MUMPCFbrsbgYH+SmiZUTzgFlng864HUGtKG917zKQ+uYYN9iuJ2jJJdy1G+BbyS8cjOua9TFdCPe3OV6PwuZtWeBcN0KTkSxzaZBN1U09wLLrpp6MRmC38iss9dsl57QOHa/fkyTxFWm9Mi+1BSCsBWsDR6CeHwmXX/GLOf5eM5NNp210nkLqRBnY5DTETXn6yERf+oAeRBDn0teVD//Vs0N0OZKzKZzaIeesiPQg0JZAOcMMD7AaTJvqC+ZPfGAO+rhXMeRjboBsHGxbxqG2x ml-infra-dev"
 }
 
-resource "aws_instance" "web" {
+resource "aws_instance" "test_instance" {
   count   = "${local.enable_test_resources}"
 
-  ami           = "${data.aws_ami.ubuntu.id}"
+  ami           = "${data.aws_ami.sre_ubuntu.id}"
   instance_type = "t2.micro"
   vpc_security_group_ids = [ "${module.default_security_groups.private_nets_ssh_security_group_id}"]
+
   key_name = "${aws_key_pair.deployer.key_name}"
 
   # since I don't have a way into the VPC yet... put it in public and get a public IP.
@@ -165,7 +173,6 @@ resource "aws_instance" "web" {
 
   tags = "${merge(local.common_tags, map("Name", "terraform-test-${module.vpc.vpc_id}"))}"
 }
-
 ##############################################################################
 #                                                                            #
 #                                 OUTPUTS                                    #
@@ -177,6 +184,10 @@ output "vpc_id" {
   value       = "${module.vpc.vpc_id}"
 }
 
+output "vpc_cidr_block" {
+  description = "The CIDR block for the VPC"
+  value = "${module.vpc.vpc_cidr_block}"
+}
 output "account_id" {
   value = "${data.aws_caller_identity.current.account_id}"
 }
@@ -185,6 +196,10 @@ output "region" {
   value = "${data.aws_region.current.id}"
 }
 
-output "dns_test" {
-  value = "${aws_route53_record.test_A_record.0.fqdn}"
+output "test_DNS_A_Record" {
+  value = "dig +short ${aws_route53_record.test_A_record.0.fqdn}"
+}
+
+output "test_SSH_Host" {
+  value = "ssh -i ~/.ssh/ml-infra-dev.pem ubuntu@${aws_instance.test_instance.0.public_ip}"
 }
