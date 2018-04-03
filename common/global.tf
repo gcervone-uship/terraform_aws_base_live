@@ -82,19 +82,19 @@ module "vpc_peer" {
     "aws.peer" = "aws.shared-us-east-1" # defined in global.tf
     "aws"      = "aws"                  # defined locally
   }
-  my_vpcid          = "${module.vpc.vpc_id}"
-  peer_vpcid        = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_id}"
-  peer_vpc_owner_id = "${data.terraform_remote_state.shared_us_east_1_remote_state.account_id}"
-  peer_vpc_region   = "${data.terraform_remote_state.shared_us_east_1_remote_state.region}"
-  my_vpc_cidr_block          = "${module.vpc.vpc_cidr_block}"
-  my_public_route_table_ids  = "${module.vpc.public_route_table_ids}"
-  my_private_route_table_ids = "${module.vpc.private_route_table_ids}"
+  my_vpcid                           = "${module.vpc.vpc_id}"
+  peer_vpcid                         = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_id}"
+  peer_vpc_owner_id                  = "${data.terraform_remote_state.shared_us_east_1_remote_state.account_id}"
+  peer_vpc_region                    = "${data.terraform_remote_state.shared_us_east_1_remote_state.region}"
+  my_vpc_cidr_block                  = "${module.vpc.vpc_cidr_block}"
+  my_public_route_table_ids          = "${module.vpc.public_route_table_ids}"
+  my_private_route_table_ids         = "${module.vpc.private_route_table_ids}"
   peer_vpc_cidr_block                = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_cidr_block}"
   peer_public_route_table_ids        = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids}"
   peer_public_route_table_ids_count  = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids_count}"
   peer_private_route_table_ids       = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids}"
   peer_private_route_table_ids_count = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids_count}"
-  common_tags = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
+  common_tags                        = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
 }
 
 ##############################################################################
@@ -166,7 +166,7 @@ data "aws_ami" "sre_ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["${data.aws_caller_identity.current.account_id}"]
+  owners = ["${data.aws_caller_identity.current.account_id}", "652911386828"]
 }
 
 resource "aws_key_pair" "deployer" {
