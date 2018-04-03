@@ -74,29 +74,26 @@ provider "aws" {
 module "vpc_peer" {
   source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc_peering?ref=lee/working" # todo change branch.
 
+  # source = "../../../../terraform_aws_base/vpc_peering" # todo remove after dev
+
   enable_vpc_peering                     = "${local.enable_vpc_peering}"
   enable_vpc_peering_route_table_updates = "${local.enable_vpc_peering_route_table_updates}"
-
   providers = {
     "aws.peer" = "aws.shared-us-east-1" # defined in global.tf
     "aws"      = "aws"                  # defined locally
   }
-
   my_vpcid          = "${module.vpc.vpc_id}"
   peer_vpcid        = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_id}"
   peer_vpc_owner_id = "${data.terraform_remote_state.shared_us_east_1_remote_state.account_id}"
   peer_vpc_region   = "${data.terraform_remote_state.shared_us_east_1_remote_state.region}"
-
   my_vpc_cidr_block          = "${module.vpc.vpc_cidr_block}"
   my_public_route_table_ids  = "${module.vpc.public_route_table_ids}"
   my_private_route_table_ids = "${module.vpc.private_route_table_ids}"
-
   peer_vpc_cidr_block                = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_cidr_block}"
   peer_public_route_table_ids        = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids}"
   peer_public_route_table_ids_count  = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids_count}"
   peer_private_route_table_ids       = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids}"
   peer_private_route_table_ids_count = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids_count}"
-
   common_tags = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
 }
 
@@ -181,12 +178,29 @@ resource "aws_key_pair" "deployer" {
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCKxsW/PNdErfbVn2+1oxtAcLTNqmeDdROuH+CdmOH6c3Hbr5QqY+QMBt8rTqxnG8MUMPCFbrsbgYH+SmiZUTzgFlng864HUGtKG917zKQ+uYYN9iuJ2jJJdy1G+BbyS8cjOua9TFdCPe3OV6PwuZtWeBcN0KTkSxzaZBN1U09wLLrpp6MRmC38iss9dsl57QOHa/fkyTxFWm9Mi+1BSCsBWsDR6CeHwmXX/GLOf5eM5NNp210nkLqRBnY5DTETXn6yERf+oAeRBDn0teVD//Vs0N0OZKzKZzaIeesiPQg0JZAOcMMD7AaTJvqC+ZPfGAO+rhXMeRjboBsHGxbxqG2x ml-infra-dev"
 }
 
+module "private_ssh_security_group" {
+  source = "terraform-aws-modules/security-group/aws//modules/ssh"
+
+  create = "${local.enable_test_resources}"
+
+  name        = "public-ssh-sg -- Terraform Test Only"
+  description = "tcp 22 open for world, egress ports are open to all networks"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  ingress_cidr_blocks    = ["0.0.0.0/0"]
+  auto_ingress_with_self = []
+
+  ingress_rules = ["all-icmp"]
+
+  tags = "${local.common_tags}"
+}
+
 resource "aws_instance" "test_instance" {
   count = "${local.enable_test_resources}"
 
   ami                    = "${data.aws_ami.sre_ubuntu.id}"
   instance_type          = "t2.micro"
-  vpc_security_group_ids = ["${module.default_security_groups.private_nets_ssh_security_group_id}"]
+  vpc_security_group_ids = ["${module.private_ssh_security_group.this_security_group_id}"]
 
   key_name = "${aws_key_pair.deployer.key_name}"
 
