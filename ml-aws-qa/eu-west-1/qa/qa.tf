@@ -13,7 +13,7 @@ terraform {
   backend "s3" {
     # https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
     bucket = "ml-sre-terraform-aws-base"
-    key    = "ml-aws-qa/eu-west-1/qa/terraform.tfstate"    # Key should be the only change needed.
+    key    = "ml-aws-qa/eu-west-1/qa/terraform.tfstate" # Key should be the only change needed.
     region = "us-east-1"
 
     shared_credentials_file = "../../../common/credentials"
@@ -46,12 +46,11 @@ locals {
 #
 provider "aws" {
   version                 = "~> 1.10"
-  allowed_account_ids     = ["000000000000"]  # <<<---- todo change to real account ID when we it created.
+  allowed_account_ids     = ["000000000000"]              # <<<---- todo change to real account ID when we it created.
   region                  = "eu-west-1"
   shared_credentials_file = "../../../common/credentials"
   profile                 = "terraform_qa"
 }
-
 
 ##############################################################################
 #                                                                            #
@@ -65,7 +64,7 @@ provider "aws" {
 module "vpc" {
   source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc?ref=lee/working" # todo change branch.
 
-  vpc_name = "qa"
+  vpc_name                = "qa"
   vpc_cidr                = "10.18.112.0/20"
   vpc_azs                 = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_private_subnets     = ["10.18.112.0/23", "10.18.114.0/23", "10.18.116.0/23"]
@@ -78,8 +77,9 @@ module "vpc" {
 }
 
 locals {
-  enable_vpc_peering = true
-  enable_default_security_groups = true
+  enable_vpc_peering                     = true
+  enable_vpc_peering_route_table_updates = true
+  enable_default_security_groups         = true
 }
 
 ##############################################################################
@@ -94,6 +94,6 @@ locals {
 #
 
 locals {
-  enable_subdomain = false     # FALSE - Already setup in the us-east-1 config.
-  subdomain_prefix = "qa"      # qa.mml.cloud (qa account)
+  enable_subdomain = false # FALSE - Already setup in the us-east-1 config.
+  subdomain_prefix = "qa"  # qa.mml.cloud (qa account)
 }

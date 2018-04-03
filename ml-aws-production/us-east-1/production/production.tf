@@ -13,7 +13,7 @@ terraform {
   backend "s3" {
     # https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
     bucket = "ml-sre-terraform-aws-base"
-    key    = "ml-aws-production/us-east-1/production/terraform.tfstate"    # Key should be the only change needed.
+    key    = "ml-aws-production/us-east-1/production/terraform.tfstate" # Key should be the only change needed.
     region = "us-east-1"
 
     shared_credentials_file = "../../../common/credentials"
@@ -46,12 +46,11 @@ locals {
 #
 provider "aws" {
   version                 = "~> 1.10"
-  allowed_account_ids     = ["000000000000"]        # <<<---- todo change to real account ID when we it created.
+  allowed_account_ids     = ["000000000000"]              # <<<---- todo change to real account ID when we it created.
   region                  = "us-east-1"
   shared_credentials_file = "../../../common/credentials"
   profile                 = "terraform_production"
 }
-
 
 ##############################################################################
 #                                                                            #
@@ -79,8 +78,9 @@ module "vpc" {
 }
 
 locals {
-  enable_vpc_peering = true
-  enable_default_security_groups = true
+  enable_vpc_peering                     = true
+  enable_vpc_peering_route_table_updates = true
+  enable_default_security_groups         = true
 }
 
 ##############################################################################
@@ -96,5 +96,5 @@ locals {
 
 locals {
   enable_subdomain = true
-  subdomain_prefix = "prod"      # prod.mml.cloud (production account)
+  subdomain_prefix = "prod" # prod.mml.cloud (production account)
 }
