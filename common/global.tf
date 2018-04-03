@@ -74,14 +74,14 @@ provider "aws" {
 module "vpc_peer" {
   source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc_peering?ref=lee/working" # todo change branch.
 
-  # source = "../../../../terraform_aws_base/vpc_peering" # todo remove after dev
-
   enable_vpc_peering                     = "${local.enable_vpc_peering}"
   enable_vpc_peering_route_table_updates = "${local.enable_vpc_peering_route_table_updates}"
+
   providers = {
     "aws.peer" = "aws.shared-us-east-1" # defined in global.tf
     "aws"      = "aws"                  # defined locally
   }
+
   my_vpcid                           = "${module.vpc.vpc_id}"
   peer_vpcid                         = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_id}"
   peer_vpc_owner_id                  = "${data.terraform_remote_state.shared_us_east_1_remote_state.account_id}"
@@ -89,6 +89,8 @@ module "vpc_peer" {
   my_vpc_cidr_block                  = "${module.vpc.vpc_cidr_block}"
   my_public_route_table_ids          = "${module.vpc.public_route_table_ids}"
   my_private_route_table_ids         = "${module.vpc.private_route_table_ids}"
+  my_public_route_table_ids_count    = "${module.vpc.public_route_table_ids_count}"
+  my_private_route_table_ids_count   = "${module.vpc.private_route_table_ids_count}"
   peer_vpc_cidr_block                = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_cidr_block}"
   peer_public_route_table_ids        = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids}"
   peer_public_route_table_ids_count  = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids_count}"
