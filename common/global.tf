@@ -180,35 +180,18 @@ resource "aws_key_pair" "deployer" {
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCKxsW/PNdErfbVn2+1oxtAcLTNqmeDdROuH+CdmOH6c3Hbr5QqY+QMBt8rTqxnG8MUMPCFbrsbgYH+SmiZUTzgFlng864HUGtKG917zKQ+uYYN9iuJ2jJJdy1G+BbyS8cjOua9TFdCPe3OV6PwuZtWeBcN0KTkSxzaZBN1U09wLLrpp6MRmC38iss9dsl57QOHa/fkyTxFWm9Mi+1BSCsBWsDR6CeHwmXX/GLOf5eM5NNp210nkLqRBnY5DTETXn6yERf+oAeRBDn0teVD//Vs0N0OZKzKZzaIeesiPQg0JZAOcMMD7AaTJvqC+ZPfGAO+rhXMeRjboBsHGxbxqG2x ml-infra-dev"
 }
 
-module "private_ssh_security_group" {
-  source = "terraform-aws-modules/security-group/aws//modules/ssh"
-
-  create = "${local.enable_test_resources}"
-
-  name        = "public-ssh-sg -- Terraform Test Only"
-  description = "tcp 22 open for world, egress ports are open to all networks"
-  vpc_id      = "${module.vpc.vpc_id}"
-
-  ingress_cidr_blocks    = ["0.0.0.0/0"]
-  auto_ingress_with_self = []
-
-  ingress_rules = ["all-icmp"]
-
-  tags = "${local.common_tags}"
-}
-
 resource "aws_instance" "test_instance" {
   count = "${local.enable_test_resources}"
 
   ami                    = "${data.aws_ami.sre_ubuntu.id}"
   instance_type          = "t2.micro"
-  vpc_security_group_ids = ["${module.private_ssh_security_group.this_security_group_id}"]
+  vpc_security_group_ids = ["${module.default_security_groups.private_nets_ssh_security_group_id}"]
 
   key_name = "${aws_key_pair.deployer.key_name}"
 
   # since I don't have a way into the VPC yet... put it in public and get a public IP.
-  subnet_id                   = "${element(module.vpc.public_subnets, 0)}"
-  associate_public_ip_address = true
+  subnet_id                   = "${element(module.vpc.private_subnets, 0)}"
+  associate_public_ip_address = false
 
   tags = "${merge(local.common_tags, map("Name", "terraform-test-${module.vpc.vpc_id}"))}"
 }
@@ -265,5 +248,5 @@ output "Z_Test_DNS_A_Record" {
 }
 
 output "Z_Test_SSH_Host" {
-  value = "ssh -i ~/.ssh/ml-infra-dev.pem ubuntu@${aws_instance.test_instance.0.public_ip}"
+  value = "ssh -i ~/.ssh/ml-infra-dev.pem ubuntu@${aws_instance.test_instance.0.private_ip}"
 }
