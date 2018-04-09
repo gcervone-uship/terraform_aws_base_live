@@ -80,7 +80,7 @@ locals {
   enable_vpc_peering                     = true
   enable_vpc_peering_route_table_updates = true
   enable_default_security_groups         = true
-  enable_vpc_flow_logs                   = true
+  enable_vpc_flow_logs                   = false
 }
 
 ##############################################################################

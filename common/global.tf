@@ -112,7 +112,7 @@ module "vpc_flowlog" {
   vpc_id               = "${module.vpc.vpc_id}"
 
   retention_in_days = "365"
-  traffic_type      = "ALL"
+  traffic_type      = "REJECT"
 }
 
 ##############################################################################
