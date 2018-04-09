@@ -75,7 +75,7 @@ module "vpc_peer" {
   source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc_peering?ref=lee/working" # todo change branch.
 
   enable_vpc_peering                     = "${local.enable_vpc_peering}"
-  enable_vpc_peering_route_table_updates = "${local.enable_vpc_peering_route_table_updates}"
+  enable_vpc_peering_route_table_updates = "${local.enable_vpc_peering_route_table_updates && local.enable_vpc_peering}"
 
   providers = {
     "aws.peer" = "aws.shared-us-east-1" # defined in global.tf
@@ -97,6 +97,22 @@ module "vpc_peer" {
   peer_private_route_table_ids       = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids}"
   peer_private_route_table_ids_count = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids_count}"
   common_tags                        = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
+}
+
+##############################################################################
+#                                                                            #
+#                             VPC FLOW LOG SETUP                             #
+#                                                                            #
+##############################################################################
+module "vpc_flowlog" {
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc_flowlogs?ref=lee/working" # todo change branch.
+
+  enable_vpc_flow_logs = "${local.enable_vpc_flow_logs}"
+  common_tags          = "${local.common_tags}"
+  vpc_id               = "${module.vpc.vpc_id}"
+
+  retention_in_days = "365"
+  traffic_type      = "ALL"
 }
 
 ##############################################################################
@@ -249,4 +265,8 @@ output "Z_Test_DNS_A_Record" {
 
 output "Z_Test_SSH_Host" {
   value = "ssh -i ~/.ssh/ml-infra-dev.pem ubuntu@${aws_instance.test_instance.0.private_ip}"
+}
+
+output "vpc_flowlog_URL" {
+  value = "${module.vpc_flowlog.vpc_flowlog_URL}"
 }

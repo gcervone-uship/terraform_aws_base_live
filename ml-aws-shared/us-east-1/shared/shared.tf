@@ -80,6 +80,7 @@ locals {
   enable_vpc_peering                     = false # <<<---- False.  Shared is NOT peered with anything.
   enable_vpc_peering_route_table_updates = false # <<<---- False.  Shared is NOT peered with anything.
   enable_default_security_groups         = true
+  enable_vpc_flow_logs                   = true
 }
 
 ##############################################################################
