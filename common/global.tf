@@ -24,6 +24,7 @@ data "terraform_remote_state" "shared_us_east_1_remote_state" {
     # https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
     bucket                  = "ml-sre-terraform-aws-base"
     key                     = "ml-aws-shared/us-east-1/shared/terraform.tfstate"
+    dynamodb_table          = "ml-sre-terraform-aws-base"
     region                  = "us-east-1"
     shared_credentials_file = "../../../common/credentials"
     profile                 = "terraform_shared"
