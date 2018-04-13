@@ -2,7 +2,7 @@
 ####################################################################################################################
 ##                                                                                                                ##
 ## THIS FILE CONTAINS CODE COMMON TO ALL ENVIRONMENTS.  IT LIVES IN THE /common DIRECTORY AND SHOULD BE           ##
-## SYMBOLICALLY LINKED INTO EACH ENVIRONMENT.                                                                     ##
+## SYMBOLICALLY LINKED INTO EACH ENVIRONMENT.  (THERE ARE NO PROVISIONS IN TERRAFORM FOR "INCLUDING" THE FILE.)   ##
 ##                                                                                                                ##
 ####################################################################################################################
 ####################################################################################################################
@@ -16,6 +16,7 @@
 #
 # Remote state for the resources in ml-aws-shared/us-east-1/shared (The main shared account)
 # VPC Peering to the main shared VPC in this account is done by all other accounts.
+# Subdomaining also involves reading from this central account's state.
 #
 data "terraform_remote_state" "shared_us_east_1_remote_state" {
   backend = "s3"
