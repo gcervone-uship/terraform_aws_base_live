@@ -60,6 +60,30 @@ provider "aws" {
 
 ##############################################################################
 #                                                                            #
+#                                 VPC SETUP                                  #
+#                                                                            #
+##############################################################################
+
+#
+# Creates and configures the vpc, subnets, subnet groups, internet gateways and NAT gateways
+#
+module "vpc" {
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc?ref=lee/working" # todo change branch.
+
+  vpc_name                = "${local.vpc_name}"
+  vpc_cidr                = "${local.vpc_cidr}"
+  vpc_azs                 = "${local.vpc_azs}"
+  vpc_private_subnets     = "${local.vpc_private_subnets}"
+  vpc_public_subnets      = "${local.vpc_public_subnets}"
+  vpc_database_subnets    = "${local.vpc_database_subnets}"
+  vpc_elasticache_subnets = "${local.vpc_elasticache_subnets}"
+  vpc_redshift_subnets    = "${local.vpc_redshift_subnets}"
+
+  common_tags = "${local.common_tags}"
+}
+
+##############################################################################
+#                                                                            #
 #                             VPC PEERING SETUP                              #
 #                                                                            #
 ##############################################################################

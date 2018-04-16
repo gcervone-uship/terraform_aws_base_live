@@ -62,10 +62,9 @@ provider "aws" {
 #
 # Creates and configures the vpc, subnets, subnet groups, internet gateways and NAT gateways
 #
-module "vpc" {
-  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc?ref=lee/working" # todo change branch.
+locals {
+  vpc_name = "qa"
 
-  vpc_name                = "qa"
   vpc_cidr                = "10.18.112.0/20"
   vpc_azs                 = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_private_subnets     = ["10.18.112.0/23", "10.18.114.0/23", "10.18.116.0/23"]
@@ -74,10 +73,6 @@ module "vpc" {
   vpc_elasticache_subnets = ["10.18.124.0/25", "10.18.124.128/25", "10.18.125.0/25"]
   vpc_redshift_subnets    = ["10.18.126.0/25", "10.18.126.128/25", "10.18.127.0/25"]
 
-  common_tags = "${local.common_tags}"
-}
-
-locals {
   enable_vpc_peering                     = true
   enable_vpc_peering_route_table_updates = true
   enable_default_security_groups         = true
