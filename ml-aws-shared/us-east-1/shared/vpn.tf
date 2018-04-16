@@ -60,6 +60,6 @@ resource "aws_route53_record" "openvpn_dns" {
   records = ["${aws_instance.openvpn_instance.public_ip}"]
 }
 
-output "OpenVPN URL" {
+output "zz_test_OpenVPN URL" {
   value = "https://${aws_route53_record.openvpn_dns.fqdn}"
 }

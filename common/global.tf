@@ -186,7 +186,7 @@ module "subdomain" {
 #
 resource "aws_route53_record" "test_A_record" {
   count   = "${local.enable_test_resources}"
-  name    = "test-${module.vpc.vpc_id}"      # todo need to make this work when called from two regions in the same account.  Add something region specific and add to output.
+  name    = "test-${module.vpc.vpc_id}"
   type    = "A"
   zone_id = "${module.subdomain.zone_id}"
   ttl     = "30"
@@ -289,14 +289,14 @@ output "region" {
   value = "${data.aws_region.current.id}"
 }
 
-output "Z_Test_DNS_A_Record" {
+output "zz_test_DNS_A_Record" {
   value = "dig +short ${aws_route53_record.test_A_record.0.fqdn}"
 }
 
-output "Z_Test_SSH_Host" {
+output "zz_test_SSH_Host" {
   value = "ssh -i ~/.ssh/ml-infra-dev.pem ubuntu@${aws_instance.test_instance.0.private_ip}"
 }
 
-output "vpc_flowlog_URL" {
+output "zz_test_vpc_flowlog_URL" {
   value = "${module.vpc_flowlog.vpc_flowlog_URL}"
 }
