@@ -97,6 +97,7 @@ locals {
 #
 
 locals {
-  enable_subdomain = false  # FALSE - Already created subdomain in us-east-1 config.
-  subdomain_prefix = "prod" # prod.mml.cloud (production account)
+  enable_subdomain               = false  # FALSE - Already created subdomain in us-east-1 config.
+  enable_subdomain_wildcard_cert = false  # FALSE - Already created subdomain in us-east-1 config.
+  subdomain_prefix               = "prod" # prod.mml.cloud (production account)
 }

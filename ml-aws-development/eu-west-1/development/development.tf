@@ -96,6 +96,7 @@ locals {
 #
 
 locals {
-  enable_subdomain = false # FALSE - We already set up this domain in the us-east-1 config
-  subdomain_prefix = "dev" # dev.mml.cloud (development account)
+  enable_subdomain               = false # FALSE - We already set up this domain in the us-east-1 config
+  enable_subdomain_wildcard_cert = false # FALSE - We already set up this domain in the us-east-1 config
+  subdomain_prefix               = "dev" # dev.mml.cloud (development account)
 }

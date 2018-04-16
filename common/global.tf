@@ -9,7 +9,7 @@
 
 ##############################################################################
 #                                                                            #
-#                         DATA SOURCES / PROVIDERS                           #
+#                         DATA SOURCES / COMMON PROVIDERS                    #
 #                                                                            #
 ##############################################################################
 
@@ -31,7 +31,7 @@ data "terraform_remote_state" "shared_us_east_1_remote_state" {
     profile                 = "terraform_shared"
   }
 
-  # Bogus defaults for the remote state when it doesn't exist.
+  # Bogus defaults for the remote state datasource when the remote state doesn't yet exist.
   # Necessary for the initial 'shared' creation not to error because that is what creates it.  Chicken/Egg
   defaults {
     vpc_id              = "undefined"
@@ -44,14 +44,8 @@ data "terraform_remote_state" "shared_us_east_1_remote_state" {
 }
 
 #
-# Setup a few datasources for outputs
-#
-data "aws_caller_identity" "current" {}
-
-data "aws_region" "current" {}
-
-#
 # Provider for the "main" shared configuration in us-east-1.
+# THIS SHOULD NOT BE EDITED UNLESS YOU ARE CHANGING THE HUB/SPOKE MODEL OFF OF SHARED.
 # Used when performing cross account acctions such as subdomaining or vpc peering.
 #
 
@@ -80,25 +74,27 @@ module "vpc_peer" {
   enable_vpc_peering_route_table_updates = "${local.enable_vpc_peering_route_table_updates && local.enable_vpc_peering}"
 
   providers = {
-    "aws.peer" = "aws.shared-us-east-1" # defined in global.tf
-    "aws"      = "aws"                  # defined locally
+    "aws.peer" = "aws.shared-us-east-1" # defined in this file (global.tf)
+    "aws"      = "aws"                  # defined in environment specific tf file (ex. prototype.tf)
   }
 
-  my_vpcid                           = "${module.vpc.vpc_id}"
-  peer_vpcid                         = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_id}"
+  my_vpcid                         = "${module.vpc.vpc_id}"
+  my_vpc_cidr_block                = "${module.vpc.vpc_cidr_block}"
+  my_public_route_table_ids        = "${module.vpc.public_route_table_ids}"
+  my_public_route_table_ids_count  = "${module.vpc.public_route_table_ids_count}"
+  my_private_route_table_ids       = "${module.vpc.private_route_table_ids}"
+  my_private_route_table_ids_count = "${module.vpc.private_route_table_ids_count}"
+
   peer_vpc_owner_id                  = "${data.terraform_remote_state.shared_us_east_1_remote_state.account_id}"
   peer_vpc_region                    = "${data.terraform_remote_state.shared_us_east_1_remote_state.region}"
-  my_vpc_cidr_block                  = "${module.vpc.vpc_cidr_block}"
-  my_public_route_table_ids          = "${module.vpc.public_route_table_ids}"
-  my_private_route_table_ids         = "${module.vpc.private_route_table_ids}"
-  my_public_route_table_ids_count    = "${module.vpc.public_route_table_ids_count}"
-  my_private_route_table_ids_count   = "${module.vpc.private_route_table_ids_count}"
+  peer_vpcid                         = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_id}"
   peer_vpc_cidr_block                = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_cidr_block}"
   peer_public_route_table_ids        = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids}"
   peer_public_route_table_ids_count  = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids_count}"
   peer_private_route_table_ids       = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids}"
   peer_private_route_table_ids_count = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids_count}"
-  common_tags                        = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
+
+  common_tags = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
 }
 
 ##############################################################################
@@ -141,11 +137,12 @@ module "default_security_groups" {
 module "subdomain" {
   source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//subdomain?ref=lee/working" # todo change branch.
 
-  enable_subdomain = "${local.enable_subdomain}"
+  enable_subdomain               = "${local.enable_subdomain}"
+  enable_subdomain_wildcard_cert = "${local.enable_subdomain_wildcard_cert && local.enable_subdomain}"
 
   providers = {
-    "aws.maindomain" = "aws.shared-us-east-1" # defined in global.tf
-    "aws"            = "aws"                  # defined locally
+    "aws.maindomain" = "aws.shared-us-east-1" # defined in this file (global.tf)
+    "aws"            = "aws"                  # defined in environment specific tf file (ex. prototype.tf)
   }
 
   maindomain_name  = "mml.cloud."
@@ -203,7 +200,7 @@ resource "aws_instance" "test_instance" {
 
   ami                    = "${data.aws_ami.sre_ubuntu.id}"
   instance_type          = "t2.micro"
-  vpc_security_group_ids = ["${module.default_security_groups.private_nets_ssh_security_group_id}"]
+  vpc_security_group_ids = ["${module.default_security_groups.private_ssh_security_group_id}"]
 
   key_name = "${aws_key_pair.deployer.key_name}"
 
@@ -222,6 +219,13 @@ resource "aws_instance" "test_instance" {
 
 # ***NOTE: Make sure that these are given default values in the
 # terraform_remote_state.shared_us_east_1_remote_state defined above.
+
+#
+# Setup a few datasources for outputs
+#
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
 
 output "vpc_id" {
   description = "The ID of the VPC"

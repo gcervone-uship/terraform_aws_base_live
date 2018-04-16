@@ -96,6 +96,7 @@ locals {
 #
 
 locals {
-  enable_subdomain = true
-  subdomain_prefix = "qa" # qa.mml.cloud (qa account)
+  enable_subdomain               = true
+  enable_subdomain_wildcard_cert = true
+  subdomain_prefix               = "qa" # qa.mml.cloud (qa account)
 }

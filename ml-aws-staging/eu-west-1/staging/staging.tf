@@ -96,6 +96,7 @@ locals {
 #
 
 locals {
-  enable_subdomain = false # FALSE - This subdomain was already set up in the us-east-1 configuration.
-  subdomain_prefix = "stg" # stg.mml.cloud (staging account)
+  enable_subdomain               = false # FALSE - This subdomain was already set up in the us-east-1 configuration.
+  enable_subdomain_wildcard_cert = false # FALSE - Thie subdomain was already set up in the us-east-1 configuration.
+  subdomain_prefix               = "stg" # stg.mml.cloud (staging account)
 }

@@ -96,6 +96,7 @@ locals {
 #
 
 locals {
-  enable_subdomain = true
-  subdomain_prefix = "pt" # pt.mml.cloud (prototype account)
+  enable_subdomain               = true
+  enable_subdomain_wildcard_cert = true
+  subdomain_prefix               = "pt" # pt.mml.cloud (prototype account)
 }

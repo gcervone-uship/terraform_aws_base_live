@@ -13,7 +13,7 @@ terraform {
   backend "s3" {
     # https://s3.console.aws.amazon.com/s3/buckets/ml-sre-terraform-aws-base/?region=us-east-1&tab=overview
     bucket = "ml-sre-terraform-aws-base"
-    key    = "ACCOUNTNAME/REGION/ENVIRONMENT/terraform.tfstate"     # CHANGEME - Must be a unique key name for this env.
+    key    = "ACCOUNTNAME/REGION/ENVIRONMENT/terraform.tfstate" # CHANGEME - Must be a unique key name for this env.
     region = "us-east-1"
 
     shared_credentials_file = "../../../common/credentials"
@@ -30,7 +30,7 @@ locals {
     Terraform   = "true"
     division    = "operations"
     project     = "aws base"
-    environment = "EXAMPLE" # CHANGEME - Based on published tagging standards.
+    environment = "EXAMPLE"    # CHANGEME - Based on published tagging standards.
     envid       = "unknown"
     role        = "unknown"
   }
@@ -95,6 +95,7 @@ locals {
 #
 
 locals {
-  enable_subdomain = true
-  subdomain_prefix = "example" # example.mml.cloud (example account)
+  enable_subdomain               = true
+  enable_subdomain_wildcard_cert = true
+  subdomain_prefix               = "example" # example.mml.cloud (example account)
 }

@@ -97,6 +97,7 @@ locals {
 #
 
 locals {
-  enable_subdomain = true
-  subdomain_prefix = "prod" # prod.mml.cloud (production account)
+  enable_subdomain               = true
+  enable_subdomain_wildcard_cert = true
+  subdomain_prefix               = "prod" # prod.mml.cloud (production account)
 }

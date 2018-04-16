@@ -15,7 +15,6 @@ locals {
   all_networks = ["0.0.0.0/0"]
 }
 
-
 module "public_openvpn_security_group" {
   source = "terraform-aws-modules/security-group/aws//modules/openvpn"
 
@@ -34,9 +33,9 @@ module "public_openvpn_security_group" {
 }
 
 resource "aws_instance" "openvpn_instance" {
-  ami                    = "ami-1b9c4966"  # <<--- Marketplace ami.  need to agree to license in marketplace.
+  ami                    = "ami-1b9c4966"                                                                                                                        # <<--- Marketplace ami.  need to agree to license in marketplace.
   instance_type          = "t2.small"
-  vpc_security_group_ids = ["${module.public_openvpn_security_group.this_security_group_id}", "${module.default_security_groups.private_nets_ssh_security_group_id}"]
+  vpc_security_group_ids = ["${module.public_openvpn_security_group.this_security_group_id}", "${module.default_security_groups.private_ssh_security_group_id}"]
 
   key_name = "${aws_key_pair.deployer.key_name}"
 
@@ -45,6 +44,7 @@ resource "aws_instance" "openvpn_instance" {
   associate_public_ip_address = true
 
   tags = "${merge(local.common_tags, map("Name", "OpenVPN Access Server"))}"
+
   user_data = <<CONFIG
 public_hostname=vpn.shared.mml.cloud
 admin_pw=ppUkr/BHTNWnqxx99mC2
