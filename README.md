@@ -44,3 +44,5 @@ to your needs.
 2. Run 'terraform get -update' to get the latest modules.  This can be run multiple times out issue.
 3. Run 'terraform plan'
 4. Run 'terraform apply'
+
+input variable for VPN password..

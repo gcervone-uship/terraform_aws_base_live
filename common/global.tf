@@ -210,7 +210,7 @@ data "aws_ami" "sre_ubuntu" {
   owners = ["${data.aws_caller_identity.current.account_id}", "652911386828"]
 }
 
-resource "aws_key_pair" "deployer" {
+resource "aws_key_pair" "ssh-keypair" {
   count = "${local.enable_test_resources}"
 
   key_name = "terraform-test-${module.vpc.vpc_id}"
@@ -226,7 +226,7 @@ resource "aws_instance" "test_instance" {
   instance_type          = "t2.micro"
   vpc_security_group_ids = ["${module.default_security_groups.private_ssh_security_group_id}"]
 
-  key_name = "${aws_key_pair.deployer.key_name}"
+  key_name = "${aws_key_pair.ssh-keypair.key_name}"
 
   # since I don't have a way into the VPC yet... put it in public and get a public IP.
   subnet_id                   = "${element(module.vpc.private_subnets, 0)}"
