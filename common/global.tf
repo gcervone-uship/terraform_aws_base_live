@@ -120,9 +120,11 @@ module "vpc_peer" {
   peer_vpc_region                    = "${data.terraform_remote_state.shared_us_east_1_remote_state.region}"
   peer_vpcid                         = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_id}"
   peer_vpc_cidr_block                = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_cidr_block}"
-  peer_public_route_table_ids        = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids}"
+  # peer_public_route_table_ids        = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids}"
+  peer_public_route_table_ids        = "${local.enable_vpc_peering ? data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids : list()}"
   peer_public_route_table_ids_count  = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids_count}"
-  peer_private_route_table_ids       = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids}"
+  # peer_private_route_table_ids       = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids}"
+  peer_private_route_table_ids       = "${local.enable_vpc_peering ? data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids : list()}"
   peer_private_route_table_ids_count = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids_count}"
 
   common_tags = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
