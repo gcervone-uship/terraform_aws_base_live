@@ -34,12 +34,19 @@ data "terraform_remote_state" "shared_us_east_1_remote_state" {
   # Bogus defaults for the remote state datasource when the remote state doesn't yet exist.
   # Necessary for the initial 'shared' creation not to error because that is what creates it.  Chicken/Egg
   defaults {
-    vpc_id              = "undefined"
-    vpc_cidr_block      = "undefined"
-    account_id          = "undefined"
-    region              = "undefined"
-    Z_Test_DNS_A_Record = "undefined"
-    Z_Test_SSH_Host     = "undefined"
+    vpc_id                        = "undefined"
+    vpc_cidr_block                = "undefined"
+    account_id                    = "undefined"
+    region                        = "undefined"
+    # public_route_table_ids should be a list, but it looks like terraform doesn't support a list in this context at the moment...
+    # public_route_table_ids        = [ "undefined" ]
+    public_route_table_ids_count  = "0"
+    # private_route_table_ids should be a list, but it looks like terraform doesn't support a list in this context at the moment...
+    # private_route_table_ids       = [ "undefined" ]
+    private_route_table_ids_count = "0"
+    zz_test_DNS_A_Record          = "undefined"
+    zz_test_SSH_Host              = "undefined"
+    zz_test_vpc_flowlog_URL       = "undefined"
   }
 }
 
