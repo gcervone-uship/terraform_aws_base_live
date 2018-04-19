@@ -93,5 +93,5 @@ locals {
 locals {
   enable_subdomain               = true
   enable_subdomain_wildcard_cert = true
-  subdomain_prefix               = "shared" # sh.mml.cloud (shared account)  todo change back to "sh" after testing complete.
+  subdomain_prefix               = "sh" # sh.mml.cloud (shared account)
 }

@@ -77,7 +77,7 @@ provider "aws" {
 # Creates and configures the vpc, subnets, subnet groups, internet gateways and NAT gateways
 #
 module "vpc" {
-  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc?ref=lee/working" # todo change branch.
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc"
 
   vpc_name                = "${local.vpc_name}"
   vpc_cidr                = "${local.vpc_cidr}"
@@ -101,7 +101,7 @@ module "vpc" {
 # Setup vpc peering between the VPC created here and the main one in the shared account.
 #
 module "vpc_peer" {
-  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc_peering?ref=lee/working" # todo change branch.
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc_peering"
 
   enable_vpc_peering                     = "${local.enable_vpc_peering}"
   enable_vpc_peering_route_table_updates = "${local.enable_vpc_peering_route_table_updates && local.enable_vpc_peering}"
@@ -140,7 +140,7 @@ module "vpc_peer" {
 #                                                                            #
 ##############################################################################
 module "vpc_flowlog" {
-  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc_flowlogs?ref=lee/working" # todo change branch.
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//vpc_flowlogs"
 
   enable_vpc_flow_logs = "${local.enable_vpc_flow_logs}"
   common_tags          = "${local.common_tags}"
@@ -156,7 +156,7 @@ module "vpc_flowlog" {
 #                                                                            #
 ##############################################################################
 module "default_security_groups" {
-  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//default_security_groups?ref=lee/working" # todo change branch.
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//default_security_groups"
 
   enable_default_security_groups = "${local.enable_default_security_groups}"
 
@@ -172,7 +172,7 @@ module "default_security_groups" {
 ##############################################################################
 
 module "subdomain" {
-  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//subdomain?ref=lee/working" # todo change branch.
+  source = "git::https://bitbucket.org/mnv_tech/terraform_aws_base.git//subdomain"
 
   enable_subdomain               = "${local.enable_subdomain}"
   enable_subdomain_wildcard_cert = "${local.enable_subdomain_wildcard_cert && local.enable_subdomain}"

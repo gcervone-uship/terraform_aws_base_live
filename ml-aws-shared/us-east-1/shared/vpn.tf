@@ -53,7 +53,6 @@ resource "aws_instance" "openvpn_instance" {
 
   tags = "${merge(local.common_tags, map("Name", "OpenVPN Access Server"))}"
 
-  # todo change the public hostname to .sh instead of .shared
   user_data = <<CONFIG
 public_hostname=vpn.${module.subdomain.full_subdomain_name}
 admin_user=openvpn
