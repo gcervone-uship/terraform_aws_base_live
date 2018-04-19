@@ -34,15 +34,17 @@ data "terraform_remote_state" "shared_us_east_1_remote_state" {
   # Bogus defaults for the remote state datasource when the remote state doesn't yet exist.
   # Necessary for the initial 'shared' creation not to error because that is what creates it.  Chicken/Egg
   defaults {
-    vpc_id                        = "undefined"
-    vpc_cidr_block                = "undefined"
-    account_id                    = "undefined"
-    region                        = "undefined"
+    vpc_id         = "undefined"
+    vpc_cidr_block = "undefined"
+    account_id     = "undefined"
+    region         = "undefined"
+
     # public_route_table_ids should be a list, but it looks like terraform doesn't support a list in this context at the moment...
-    # public_route_table_ids        = [ "undefined" ]
-    public_route_table_ids_count  = "0"
+    public_route_table_ids       = "undefined"
+    public_route_table_ids_count = "0"
+
     # private_route_table_ids should be a list, but it looks like terraform doesn't support a list in this context at the moment...
-    # private_route_table_ids       = [ "undefined" ]
+    private_route_table_ids       = "undefined"
     private_route_table_ids_count = "0"
     zz_test_DNS_A_Record          = "undefined"
     zz_test_SSH_Host              = "undefined"
@@ -116,15 +118,17 @@ module "vpc_peer" {
   my_private_route_table_ids       = "${module.vpc.private_route_table_ids}"
   my_private_route_table_ids_count = "${module.vpc.private_route_table_ids_count}"
 
-  peer_vpc_owner_id                  = "${data.terraform_remote_state.shared_us_east_1_remote_state.account_id}"
-  peer_vpc_region                    = "${data.terraform_remote_state.shared_us_east_1_remote_state.region}"
-  peer_vpcid                         = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_id}"
-  peer_vpc_cidr_block                = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_cidr_block}"
-  # peer_public_route_table_ids        = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids}"
-  peer_public_route_table_ids        = "${local.enable_vpc_peering ? data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids : list()}"
-  peer_public_route_table_ids_count  = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids_count}"
-  # peer_private_route_table_ids       = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids}"
-  peer_private_route_table_ids       = "${local.enable_vpc_peering ? data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids : list()}"
+  peer_vpc_owner_id   = "${data.terraform_remote_state.shared_us_east_1_remote_state.account_id}"
+  peer_vpc_region     = "${data.terraform_remote_state.shared_us_east_1_remote_state.region}"
+  peer_vpcid          = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_id}"
+  peer_vpc_cidr_block = "${data.terraform_remote_state.shared_us_east_1_remote_state.vpc_cidr_block}"
+
+  # flatten(list()) workaround because remote_state defaults only supports type string and I need a list here.
+  peer_public_route_table_ids       = "${flatten(list(data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids))}"
+  peer_public_route_table_ids_count = "${data.terraform_remote_state.shared_us_east_1_remote_state.public_route_table_ids_count}"
+
+  # flatten(list()) workaround because remote_state defaults only supports type string and I need a list here.
+  peer_private_route_table_ids       = "${flatten(list(data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids))}"
   peer_private_route_table_ids_count = "${data.terraform_remote_state.shared_us_east_1_remote_state.private_route_table_ids_count}"
 
   common_tags = "${merge(local.common_tags, map("Name", "to-shared-vpc"))}"
